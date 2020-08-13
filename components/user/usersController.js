@@ -1,9 +1,11 @@
-const { getAll } = require('./usersService');
+const { all, add } = require('./usersService');
+const { validationResult } = require('express-validator');
+const { SERVER_ERROR_MESSAGE } = require('../../constants');
 
 const usersController = {
-    getAllUsers: async function (req, res) {
+    getUsers: async (req, res) => {
         try {
-            const users = await getAll();
+            const users = await all();
             if (users) {
                 res.json({
                     status: true,
@@ -12,13 +14,34 @@ const usersController = {
             } else {
                 res.json({
                     status: false,
-                    message: 'Something went wrong.'
+                    message: SERVER_ERROR_MESSAGE
                 });
             }
         } catch (e) {
             res.json({
                 status: false,
-                message: 'Something went wrong.'
+                message: SERVER_ERROR_MESSAGE
+            });
+        }
+    },
+    createUser: async (req, res) => {
+        try {
+            
+            const errors = validationResult(req);
+
+            if (!errors.isEmpty()) {
+                return res.json({ status: false, error: errors.array() });
+            }
+
+            const user = await add(req.body.user);
+            res.json({
+                status: true,
+                message: user
+            });
+        } catch (e) {
+            res.json({
+                status: false,
+                message: SERVER_ERROR_MESSAGE
             });
         }
     }

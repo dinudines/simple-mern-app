@@ -1,15 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const { } = require('./usersController');
+const validator = require('./userValidation');
+const { getUsers, createUser } = require('./usersController');
 
 /*
 ** @route GET /api/users
 ** @description Get all users
 ** @public True
 */
-router.get('/', (req, res) => {
-    res.json({ status: true, users: [] });
-});
+router.get('/', getUsers);
 
 
 /*
@@ -17,8 +16,6 @@ router.get('/', (req, res) => {
 ** @description Create a user
 ** @public True
 */
-router.post('/', (req, res) => {
-    res.json({ status: true, user: req.body.user });
-});
+router.post('/', validator.createUser ,createUser);
 
 module.exports = router;
