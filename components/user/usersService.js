@@ -1,4 +1,5 @@
 const User = require('./User');
+const { emit } = require('./User');
 
 const usersService = {
     all: () => {
@@ -27,7 +28,18 @@ const usersService = {
                 reject(e);
             }
         });
-    }
+    },
+
+    findByEmail: (email) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const user = await User.findOne({ email: email });
+                resolve(user);
+            } catch (e) {
+                reject(e);
+            }
+        });
+    },
 };
 
 module.exports = usersService;
