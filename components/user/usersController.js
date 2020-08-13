@@ -1,7 +1,7 @@
 const { all, add, findByEmail } = require('./usersService');
 const { validationResult } = require('express-validator');
 const { successHandler, errorhandler } = require('../utils/requestHandler');
-const { SERVER_ERROR_MESSAGE,
+const {
     SIGNUP_SUCCESSFUL_MESSAGE,
     LOGIN_UNSUCCESSFUL_MESSAGE,
     LOGIN_SUCCESSFUL_MESSAGE,
@@ -14,7 +14,7 @@ const usersController = {
             const users = await all();
             successHandler(res, undefined, { users });
         } catch (e) {
-            errorhandler(res, undefined, e);
+            errorhandler(req, res, undefined, e);
         }
     },
     signup: async (req, res) => {
@@ -22,14 +22,14 @@ const usersController = {
             const errors = validationResult(req);
 
             if (!errors.isEmpty()) {
-                return errorhandler(res, undefined, { errors : errors.array() });
+                return errorhandler(req, res, undefined, { errors : errors.array() });
             }
 
             const user = await add(req.body.user);
 
             successHandler(res, SIGNUP_SUCCESSFUL_MESSAGE, {user : user});
         } catch (e) {
-            errorhandler(res, undefined, e);
+            errorhandler(req, res, undefined, e);
         }
     },
     login: async (req, res) => {
@@ -37,7 +37,7 @@ const usersController = {
             const errors = validationResult(req);
 
             if (!errors.isEmpty()) {
-                return errorhandler(res, undefined, { errors : errors.array() });
+                return errorhandler(req, res, undefined, { errors : errors.array() });
             }
 
             const { email, password } = req.body;
@@ -49,15 +49,15 @@ const usersController = {
                 const isMatch = await user.comparePassword(password);
 
                 if (isMatch) {
-                    successHandler(res, LOGIN_SUCCESSFUL_MESSAGE);
+                    successHandler(res, LOGIN_SUCCESSFUL_MESSAGE, {email: user.email});
                 } else {
-                    errorhandler(res, LOGIN_PASSWORD_FAILED);
+                    errorhandler(req, res, LOGIN_PASSWORD_FAILED);
                 }
             } else {
-                errorhandler(res, LOGIN_UNSUCCESSFUL_MESSAGE);
+                errorhandler(req, res, LOGIN_UNSUCCESSFUL_MESSAGE);
             }
         } catch (e) {
-            errorhandler(res, undefined, e);
+            errorhandler(req, res, undefined, e);
         }
     }
 };

@@ -1,14 +1,15 @@
 const { SERVER_ERROR_MESSAGE } = require('../../constants');
+const { successLogger, errorLogger} = require('./logger');
 
 const requestHandler = {
 
     successHandler: (res, message = 'Success', data = {}) => {
-        //this.logger.log(`a request has been made and processed successfully at: ${new Date()}`, 'info');
+        successLogger.info(`Success request at ${Date.now()}, details message: ${message} data: ${JSON.stringify(data)}`);
         return res.json({ status: true, message: message, data });
     },
 
-    errorhandler: (res, message = SERVER_ERROR_MESSAGE, data = {}) => {
-        //this.logger.log(`error ,Error during processing request: ${`${req.protocol}://${req.get('host')}${req.originalUrl}`} details message: ${error.message}`, 'error');
+    errorhandler: (req, res, message = SERVER_ERROR_MESSAGE, data = {}) => {
+        errorLogger.error(`Error at ${Date.now()} processing request: ${`${req.protocol}://${req.get('host')}${req.originalUrl}`} details message: ${message} data: ${JSON.stringify(data)}`);
         return res.json({ status: false, message: message, data });
     }
 };

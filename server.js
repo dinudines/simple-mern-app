@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const compression = require('compression');
@@ -6,9 +7,8 @@ const morgan = require('morgan');
 const fs = require('fs');
 const path = require('path');
 const routes = require('./routes/api');
-require('dotenv').config();
 
-const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' })
+const accessLogStream = fs.createWriteStream(path.join(__dirname, 'logs/access.log'), { flags: 'a' })
 
 const app = express();
 
