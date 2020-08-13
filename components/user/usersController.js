@@ -1,5 +1,6 @@
 const { all, add, findByEmail } = require('./usersService');
 const { validationResult } = require('express-validator');
+const { successHandler, errorhandler } = require('../utils/requestHandler');
 const { SERVER_ERROR_MESSAGE,
     SIGNUP_SUCCESSFUL_MESSAGE,
     LOGIN_UNSUCCESSFUL_MESSAGE,
@@ -11,22 +12,9 @@ const usersController = {
     getUsers: async (req, res) => {
         try {
             const users = await all();
-            if (users) {
-                res.json({
-                    status: true,
-                    users
-                });
-            } else {
-                res.json({
-                    status: false,
-                    message: SERVER_ERROR_MESSAGE
-                });
-            }
+            successHandler(res, undefined, { users });
         } catch (e) {
-            res.json({
-                status: false,
-                message: SERVER_ERROR_MESSAGE
-            });
+            errorhandler(res, undefined, e);
         }
     },
     signup: async (req, res) => {
@@ -34,20 +22,14 @@ const usersController = {
             const errors = validationResult(req);
 
             if (!errors.isEmpty()) {
-                return res.json({ status: false, error: errors.array() });
+                return errorhandler(res, undefined, { errors : errors.array() });
             }
 
             const user = await add(req.body.user);
-            
-            res.json({
-                status: true,
-                message: SIGNUP_SUCCESSFUL_MESSAGE
-            });
+
+            successHandler(res, SIGNUP_SUCCESSFUL_MESSAGE, {user : user});
         } catch (e) {
-            res.json({
-                status: false,
-                message: SERVER_ERROR_MESSAGE
-            });
+            errorhandler(res, undefined, e);
         }
     },
     login: async (req, res) => {
@@ -55,7 +37,7 @@ const usersController = {
             const errors = validationResult(req);
 
             if (!errors.isEmpty()) {
-                return res.json({ status: false, error: errors.array() });
+                return errorhandler(res, undefined, { errors : errors.array() });
             }
 
             const { email, password } = req.body;
@@ -67,27 +49,15 @@ const usersController = {
                 const isMatch = await user.comparePassword(password);
 
                 if (isMatch) {
-                    res.json({
-                        status: true,
-                        message: LOGIN_SUCCESSFUL_MESSAGE
-                    });
+                    successHandler(res, LOGIN_SUCCESSFUL_MESSAGE);
                 } else {
-                    res.json({
-                        status: false,
-                        message: LOGIN_PASSWORD_FAILED
-                    });
+                    errorhandler(res, LOGIN_PASSWORD_FAILED);
                 }
             } else {
-                res.json({
-                    status: false,
-                    message: LOGIN_UNSUCCESSFUL_MESSAGE
-                });
+                errorhandler(res, LOGIN_UNSUCCESSFUL_MESSAGE);
             }
         } catch (e) {
-            res.json({
-                status: false,
-                message: SERVER_ERROR_MESSAGE
-            });
+            errorhandler(res, undefined, e);
         }
     }
 };
