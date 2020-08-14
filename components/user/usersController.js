@@ -5,7 +5,8 @@ const {
     SIGNUP_SUCCESSFUL_MESSAGE,
     LOGIN_UNSUCCESSFUL_MESSAGE,
     LOGIN_SUCCESSFUL_MESSAGE,
-    LOGIN_PASSWORD_FAILED
+    LOGIN_PASSWORD_FAILED,
+    SIGNUP_EXISTING_USER_MESSAGE
 } = require('../../constants');
 
 const usersController = {
@@ -25,9 +26,16 @@ const usersController = {
                 return errorhandler(req, res, undefined, { errors : errors.array() });
             }
 
-            const user = await add(req.body.user);
+            const { email } = req.body;
+            
+            const user = await findByEmail(email);
 
-            successHandler(res, SIGNUP_SUCCESSFUL_MESSAGE, {user : user});
+            if (!user) {
+                const newUser = await add(req.body);
+                successHandler(res, SIGNUP_SUCCESSFUL_MESSAGE, {user : newUser});
+            } else {
+                errorhandler(req, res, SIGNUP_EXISTING_USER_MESSAGE, undefined);
+            }
         } catch (e) {
             errorhandler(req, res, undefined, e);
         }

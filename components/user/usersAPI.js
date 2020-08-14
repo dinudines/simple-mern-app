@@ -16,7 +16,7 @@ router.get('/', getUsers);
 ** @description Create a user
 ** @public true
 */
-router.post('/signup', validator.createUser, signup);
+router.post('/signup', validator.signup, signup);
 
 /*
 ** @route POST /api/users/login

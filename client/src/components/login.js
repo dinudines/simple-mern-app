@@ -1,7 +1,10 @@
 import React, { useContext } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
+import ErrorList from '../utils/errorList';
+import { LOGIN, FIELD, SUCCESS, ERROR } from '../actions/loginActions';
 import { StateContext, DispatchContext } from './home';
-import { LOGIN_API } from '../constants';
+import { LOGIN_API_URL } from '../constants';
 import { Button, TextField, FormControl } from '@material-ui/core';
 
 const Login = () => {
@@ -17,62 +20,61 @@ const Login = () => {
             email,
             password
         };
-        dispatch({ type: 'LOGIN' });
-        axios.post(LOGIN_API, data)
+        dispatch({ type: LOGIN });
+        axios.post(LOGIN_API_URL, data)
         .then(res => {
             const response = res.data;
             if (response.status) {
-                dispatch({ type: 'SUCCESS' });
+                dispatch({ type: SUCCESS });
             } else {
                 if (response.data.errors) {
                     const errorsList = response.data.errors.map(error => {
                         return error.msg;
                     });
-                    dispatch({ type: 'ERROR', errors: errorsList });
+                    dispatch({ type: ERROR, errors: errorsList });
                 } else {
-                    dispatch({ type: 'ERROR', errors: [response.message] });
+                    dispatch({ type: ERROR, errors: [response.message] });
                 }
             }
         })
         .catch(e => {
-            dispatch({ type: 'ERROR', errors: [e.description] });
+            dispatch({ type: ERROR, errors: ['Something went wrong.Please try after sometime.'] });
         });
         
     };
 
     const onChange = (field, value) => {
-        dispatch({type: 'FIELD', field: field, value: value})
+        dispatch({type: FIELD, field: field, value: value})
     }
-
-    const errorsList = errors.map((error, index) => {
-        return <li key={index}> {error} </li>
-    });
     
     return (
-        <div className='Login'>
+        <div className='Container'>
             <h2> Welcome back, Please Login </h2>
             <form className='loginForm' autoComplete='off' onSubmit={onSubmit}>
                 <FormControl fullWidth>
                     <TextField
                         id='email'
-                        label='Email'
+                        type='email'
+                        label='Email*'
                         variant='outlined'
                         color='primary'
                         value={email}
+                        aria-describedby='my-email-id'
                         onChange={(e) => onChange('email', e.target.value)}
                     />
                     <TextField
                         className='marginTop1'
                         id='password'
                         type='password'
-                        label='Password'
+                        label='Password*'
                         variant='outlined'
                         color='primary'
                         value={password}
+                        aria-describedby='my-password'
                         onChange={(e) =>  onChange('password', e.target.value)}
                     />
                 </FormControl>
-                { errors.length > 0 && <p className='error'> {errorsList} </p> }
+                {errors.length > 0 && <p className='error'> <ErrorList errors={errors}/> </p> }
                 <Button
                     className='marginTop1'
                     variant='contained'
@@ -82,6 +84,7 @@ const Login = () => {
                 > 
                     {isLoading ? 'Loading...' : 'Login'}
                 </Button>
+                <p> Don't have an account? <Link to='/signup'> Signup here </Link></p>
             </form>
         </div>
     )

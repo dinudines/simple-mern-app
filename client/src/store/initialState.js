@@ -3,5 +3,7 @@ module.exports = {
     email: '',
     password: '',
     isLoading: false,
-    errors: []
+    errors: [],
+    firstName: '',
+    lastName: '',
 };

@@ -1,8 +1,8 @@
-import { LOGIN, FIELD, ERROR, SUCCESS } from '../actions/loginActions';
+import { SIGNUP, FIELD, ERROR, SUCCESS } from '../actions/signupActions';
 
-const loginReducer = (state, action) => {
+const signupReducer = (state, action) => {
     switch (action.type) {
-        case LOGIN:
+        case SIGNUP:
             return {
                 ...state,
                 isLoading: true
@@ -24,15 +24,17 @@ const loginReducer = (state, action) => {
         case SUCCESS:
             return {
                 ...state,
+                firstName: '',
+                lastName: '',
                 email: '',
                 password: '',
                 isLoading: false,
                 isLoggedIn: true,
-                errors: []
+                errors: [],
             }
         
         default: return state;
     }
 };
 
-export default loginReducer;
+export default signupReducer;
