@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const bcrypt = require('bcryptjs');
+const saltRounds = 10;
 
 const userSchema = new Schema({
     firstName: {
@@ -13,8 +15,7 @@ const userSchema = new Schema({
     email: {
         type: String,
         required: true,
-        unique: true,
-        match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Invalid email address']
+        unique: true
     },
     password: {
         type: String,
@@ -22,8 +23,32 @@ const userSchema = new Schema({
     },
     createdAt: {
         type: Date,
-        default: Date.now
+        default: new Date()
     }
 });
+  
+userSchema.pre("save", function (next) {
+    const user = this;
+    if (!user.isModified("password")) return next();
+    bcrypt.genSalt(saltRounds, (err, salt) => {
+        if (err) return next(err);
+        bcrypt.hash(user.password, salt, (err, hash) => {
+            if (err) return next(err);
+            user.password = hash;
+            next();
+        });
+    });
+});
+
+userSchema.methods.comparePassword = function (password, cb) {
+    return new Promise((resolve, reject) => {
+        bcrypt.compare(password, this.password, function(err, isMatch) {
+            if (err) {
+                reject({error: err});
+            }
+            resolve(isMatch);
+        });
+    });
+  };
 
 module.exports = mongoose.model('User', userSchema);

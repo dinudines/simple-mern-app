@@ -1,24 +1,28 @@
 const express = require('express');
 const router = express.Router();
-const { } = require('./usersController');
+const validator = require('./userValidation');
+const { getUsers, signup, login } = require('./usersController');
 
 /*
 ** @route GET /api/users
 ** @description Get all users
-** @public True
+** @public false
 */
-router.get('/', (req, res) => {
-    res.json({ status: true, users: [] });
-});
+router.get('/', getUsers);
 
 
 /*
 ** @route POST /api/users
 ** @description Create a user
-** @public True
+** @public true
 */
-router.post('/', (req, res) => {
-    res.json({ status: true, user: req.body.user });
-});
+router.post('/signup', validator.signup, signup);
+
+/*
+** @route POST /api/users/login
+** @description Login user
+** @public true
+*/
+router.post('/login', validator.login, login);
 
 module.exports = router;
