@@ -1,18 +1,18 @@
 import React, { useReducer } from 'react';
-import axios from 'axios';
+import { Link, Redirect } from 'react-router-dom';
+import { Button, TextField, FormControl } from '@material-ui/core';
 import ErrorList from '../utils/errorList';
 import signupReducer from '../reducers/loginReducer';
 import initialState from '../store/initialState';
-import { SIGNUP_API_URL } from '../constants';
-import { SIGNUP, FIELD, SUCCESS, ERROR} from '../actions/signupActions';
-import { Link } from 'react-router-dom';
-import { Button, TextField, FormControl } from '@material-ui/core';
+import { signup } from '../services/authService';
+import { SIGNUP, FIELD, SUCCESS, ERROR } from '../actions/signupActions';
+import { ERROR_MESSAGE } from '../constants';
 
 const Signup = () => {
     
     const [state, dispatch] = useReducer(signupReducer,initialState);
 
-    const { firstName, lastName, email, password, isLoading, errors } = state;
+    const { firstName, lastName, email, password, isLoading, errors, isLoggedIn } = state;
 
     const onChange = (field, value) => {
         dispatch({ type: FIELD, field: field, value: value });
@@ -20,34 +20,26 @@ const Signup = () => {
 
     const onSubmit = (e) => {
         e.preventDefault();
-        const data = {
-            firstName,
-            lastName,
-            email,
-            password
-        };
         dispatch({ type: SIGNUP });
-        axios.post(SIGNUP_API_URL, data)
-        .then(res => {
-            const response = res.data;
-            if (response.status) {
-                dispatch({ type: SUCCESS });
-            } else {
-                if (response.data.errors) {
-                    const errorsList = response.data.errors.map(error => {
-                        return error.msg;
-                    });
-                    dispatch({ type: ERROR, errors: errorsList });
+
+        signup(firstName, lastName, email, password)
+            .then(res => {
+                if (res && res.status) {
+                    dispatch({ type: SUCCESS });
                 } else {
-                    dispatch({ type: ERROR, errors: [response.message] });
+                    if (res && res.data.errors) {
+                        const errorsList = res.data.errors.map(error => {
+                            return error.msg;
+                        });
+                        dispatch({ type: ERROR, errors: errorsList });
+                    } else {
+                        dispatch({ type: ERROR, errors: [ERROR_MESSAGE] });
+                    }
                 }
-            }
-        })
-        .catch(e => {
-            dispatch({ type: ERROR, errors: ['Something went wrong.Please try after sometime.'] });
-        });
+            });
     }
     return (
+        isLoggedIn ? <Redirect to='/' /> :
         <div className='Container'>
             <h2> Welcome, Please fill in the details </h2>
             <form className='signupForm' autoComplete='off' onSubmit={onSubmit}>

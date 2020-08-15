@@ -1,11 +1,12 @@
 import React, { useContext } from 'react';
-import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { Button, TextField, FormControl } from '@material-ui/core';
 import ErrorList from '../utils/errorList';
 import { LOGIN, FIELD, SUCCESS, ERROR } from '../actions/loginActions';
-import { StateContext, DispatchContext } from './home';
-import { LOGIN_API_URL } from '../constants';
-import { Button, TextField, FormControl } from '@material-ui/core';
+import { StateContext, DispatchContext } from './Home';
+import { login } from '../services/authService';
+import { ERROR_MESSAGE } from '../constants';
+
 
 const Login = () => {
 
@@ -16,31 +17,23 @@ const Login = () => {
 
     const onSubmit = (e) => {
         e.preventDefault();
-        const data = {
-            email,
-            password
-        };
         dispatch({ type: LOGIN });
-        axios.post(LOGIN_API_URL, data)
-        .then(res => {
-            const response = res.data;
-            if (response.status) {
-                dispatch({ type: SUCCESS });
-            } else {
-                if (response.data.errors) {
-                    const errorsList = response.data.errors.map(error => {
-                        return error.msg;
-                    });
-                    dispatch({ type: ERROR, errors: errorsList });
-                } else {
-                    dispatch({ type: ERROR, errors: [response.message] });
-                }
-            }
-        })
-        .catch(e => {
-            dispatch({ type: ERROR, errors: ['Something went wrong.Please try after sometime.'] });
-        });
         
+        login(email, password)
+            .then(res => {
+                if (res && res.status) {
+                    dispatch({ type: SUCCESS });
+                } else {
+                    if (res && res.data.errors) {
+                        const errorsList = res.data.errors.map(error => {
+                            return error.msg;
+                        });
+                        dispatch({ type: ERROR, errors: errorsList });
+                    } else {
+                        dispatch({ type: ERROR, errors: [ERROR_MESSAGE] });
+                    }
+                }
+            });
     };
 
     const onChange = (field, value) => {
