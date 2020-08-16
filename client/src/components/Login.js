@@ -23,15 +23,15 @@ const Login = () => {
             .then(res => {
                 if (res && res.status) {
                     dispatch({ type: SUCCESS });
+                } else if (res && res.data.errors) {
+                    const errorsList = res.data.errors.map(error => {
+                        return error.msg;
+                    });
+                    dispatch({ type: ERROR, errors: errorsList });
+                } else if(res) {
+                    dispatch({ type: ERROR, errors: [res.message] });
                 } else {
-                    if (res && res.data.errors) {
-                        const errorsList = res.data.errors.map(error => {
-                            return error.msg;
-                        });
-                        dispatch({ type: ERROR, errors: errorsList });
-                    } else {
-                        dispatch({ type: ERROR, errors: [ERROR_MESSAGE] });
-                    }
+                    dispatch({ type: ERROR, errors: [ERROR_MESSAGE] });
                 }
             });
     };

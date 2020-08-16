@@ -49,6 +49,10 @@ userSchema.methods.comparePassword = function (password, cb) {
             resolve(isMatch);
         });
     });
-  };
+};
+
+userSchema.methods.getInfo = function () {
+    return { id: this._id, firstName: this.firstName, lastName: this.lastName, email: this.email }
+};
 
 module.exports = mongoose.model('User', userSchema);

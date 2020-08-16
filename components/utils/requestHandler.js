@@ -3,9 +3,9 @@ const { successLogger, errorLogger} = require('./logger');
 
 const requestHandler = {
 
-    successHandler: (res, message = 'Success', data = {}) => {
+    successHandler: (res, token = '', message = 'Success', data = {}) => {
         successLogger.info(`Success request at ${Date.now()}, details message: ${message} data: ${JSON.stringify(data)}`);
-        return res.json({ status: true, message: message, data });
+        return res.json({ status: true, token: token, message: message, data });
     },
 
     errorhandler: (req, res, message = SERVER_ERROR_MESSAGE, data = {}) => {
