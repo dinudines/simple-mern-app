@@ -1,8 +1,5 @@
 # simple-mern-app
 
-NodeJs for the backend
-React for the frontend
-
 ## Available Scripts
 
 In the project directory, you can run:
