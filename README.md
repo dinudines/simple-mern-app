@@ -6,7 +6,7 @@ Go to the project directory
 1) `npm install` to install the backend dependencies
 Naviagate to client directory
 2) `cd client`
-2) `npm install` to install the frontend dependencies
+3) `npm install` to install the frontend dependencies
 
 ## Available Scripts
 
