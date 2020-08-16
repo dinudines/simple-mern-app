@@ -30,6 +30,7 @@ export const login = (email, password) => {
       if (response.data.token) {
         localStorage.setItem('user', JSON.stringify(response.data.data));
       }
+      console.log(" response :", response.data);
       return response.data;
     })
     .catch(e => {
