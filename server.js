@@ -18,8 +18,10 @@ app.use(compression());
 app.use(helmet());
 app.use(morgan('combined', { stream: accessLogStream }));
 
+const DB_URL = process.env.NODE_ENV === 'test' ? process.env.DB_TEST_CONNECTION : process.env.DB_CONNECTION;
+
 mongoose
-    .connect(process.env.DB_CONNECTION, {
+    .connect(DB_URL, {
         useUnifiedTopology: true,
         useCreateIndex: true,
         useNewUrlParser: true
@@ -39,3 +41,5 @@ const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
     console.log('Server is listening on the port :', PORT);
 });
+
+module.exports = app;
