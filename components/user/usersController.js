@@ -1,6 +1,7 @@
 const { all, add, findByEmail } = require('./usersService');
 const { validationResult } = require('express-validator');
 const { successHandler, errorhandler } = require('../utils/requestHandler');
+const { getToken, verifyToken } = require('../utils/jwtHelper');
 const {
     SIGNUP_SUCCESSFUL_MESSAGE,
     LOGIN_UNSUCCESSFUL_MESSAGE,
@@ -13,7 +14,7 @@ const usersController = {
     getUsers: async (req, res) => {
         try {
             const users = await all();
-            successHandler(res, undefined, { users });
+            successHandler(res, undefined, undefined, { users });
         } catch (e) {
             errorhandler(req, res, undefined, e);
         }
@@ -32,7 +33,13 @@ const usersController = {
 
             if (!user) {
                 const newUser = await add(req.body);
-                successHandler(res, SIGNUP_SUCCESSFUL_MESSAGE, {user : newUser});
+                
+                const token = getToken({
+                    id: newUser._id,
+                    email: newUser.email
+                });
+
+                successHandler(res, token, SIGNUP_SUCCESSFUL_MESSAGE, newUser.getInfo());
             } else {
                 errorhandler(req, res, SIGNUP_EXISTING_USER_MESSAGE, undefined);
             }
@@ -57,7 +64,13 @@ const usersController = {
                 const isMatch = await user.comparePassword(password);
 
                 if (isMatch) {
-                    successHandler(res, LOGIN_SUCCESSFUL_MESSAGE, {email: user.email});
+
+                    const token = getToken({
+                        id: user._id,
+                        email: user.email
+                    });
+
+                    successHandler(res, token, LOGIN_SUCCESSFUL_MESSAGE, user.getInfo());
                 } else {
                     errorhandler(req, res, LOGIN_PASSWORD_FAILED);
                 }
