@@ -1,19 +1,22 @@
-import React, { useContext } from 'react';
+import React from 'react';
+import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Button, TextField, FormControl } from '@material-ui/core';
 import ErrorList from '../utils/errorList';
 import { LOGIN, FIELD, SUCCESS, ERROR } from '../actions/loginActions';
-import { StateContext, DispatchContext } from './Home';
 import { login } from '../services/authService';
 import { ERROR_MESSAGE } from '../constants';
 
-
 const Login = () => {
 
-    const state = useContext(StateContext);
-    const dispatch = useContext(DispatchContext);
+    const state = useSelector(state => state.login, shallowEqual);
+    const { email, password, isLoading, isLoggedIn, errors } = state;
 
-    const { isLoading, email, password, errors } = state;
+    const dispatch = useDispatch();
+
+    if (isLoggedIn) {
+        window.location.reload();
+    }
 
     const onSubmit = (e) => {
         e.preventDefault();
