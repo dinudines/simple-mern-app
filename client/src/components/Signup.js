@@ -1,18 +1,18 @@
-import React, { useReducer } from 'react';
+import React from 'react';
+import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import { Button, TextField, FormControl } from '@material-ui/core';
 import ErrorList from '../utils/errorList';
-import signupReducer from '../reducers/loginReducer';
-import initialState from '../store/initialState';
 import { signup } from '../services/authService';
 import { SIGNUP, FIELD, SUCCESS, ERROR } from '../actions/signupActions';
 import { ERROR_MESSAGE } from '../constants';
 
 const Signup = () => {
     
-    const [state, dispatch] = useReducer(signupReducer,initialState);
-
+    const state = useSelector(state => state.signup, shallowEqual);
     const { firstName, lastName, email, password, isLoading, errors, isLoggedIn } = state;
+
+    const dispatch = useDispatch();
 
     const onChange = (field, value) => {
         dispatch({ type: FIELD, field: field, value: value });

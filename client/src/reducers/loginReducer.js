@@ -1,6 +1,14 @@
 import { LOGIN, FIELD, ERROR, SUCCESS } from '../actions/loginActions';
 
-const loginReducer = (state, action) => {
+const defaultState = {
+    email: '',
+    password: '',
+    isLoading: false,
+    errors: [],
+    isLoggedIn: false
+};
+
+const loginReducer = (state = defaultState, action) => {
     switch (action.type) {
         case LOGIN:
             return {
