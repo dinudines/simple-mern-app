@@ -24,7 +24,6 @@ const Signup = () => {
 
         signup(firstName, lastName, email, password)
             .then(res => {
-                console.log(" res :", res);
                 if (res && res.status) {
                     dispatch({ type: SUCCESS });
                 } else {
